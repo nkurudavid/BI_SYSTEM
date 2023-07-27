@@ -29,6 +29,16 @@ def shop_checkout(request):
 
 
 
+def order_confirmation(request):
+    return render(request, 'main/confirmation.html');
+
+
+
+def order_tracking(request):
+    return render(request, 'main/tracking.html');
+
+
+
 def contact(request):
     return render(request, 'main/contact.html');
 
