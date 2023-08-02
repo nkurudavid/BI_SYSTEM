@@ -51,14 +51,26 @@ class Order(models.Model):
     def __str__(self):
         return f"{self.order_number} - {self.client.first_name} {self.client.last_name}"
 
+    def save(self, *args, **kwargs):
+        if self.status == Order.OrderStatus.SUCCESS and not self.pk:
+            # Create StockMovement instances for each OrderDetail when the order status is set to "Success"
+            for order_detail in self.order_details.all():
+                StockMovement.objects.create(
+                    product_detail=order_detail.product,
+                    movement_type=StockMovement.MovementType.STOCK_OUT,
+                    quantity=order_detail.quantity,
+                    total_price=order_detail.product_detail.product.price * order_detail.quantity,
+                )
+
+        super().save(*args, **kwargs)
 
 
 class OrderDetail(models.Model):
     order = models.ForeignKey(Order, verbose_name="Order", related_name="order_details", on_delete=models.CASCADE)
-    product = models.ForeignKey(ProductDetail, verbose_name="Product", on_delete=models.CASCADE)
+    product_detail = models.ForeignKey(ProductDetail, verbose_name="Product", on_delete=models.CASCADE)
     quantity = models.FloatField(verbose_name="Quantity", default=0.0, null=False)
     def __str__(self):
-        return f"{self.order.order_number} - {self.product}"
+        return f"{self.order.order_number} - {self.product_detail}"
 
 
 
@@ -71,7 +83,6 @@ class StockMovement(models.Model):
     movement_type = models.CharField(verbose_name="Movement", choices=MovementType.choices, max_length=10)
     quantity = models.FloatField(verbose_name="Quantity", default=0.0, null=False)
     total_price = models.FloatField(verbose_name="Total Price", default=0.0, null=False)
-    processed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     date_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

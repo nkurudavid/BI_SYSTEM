@@ -12,6 +12,12 @@ class ProductInline(admin.StackedInline):
     inlines = [ProductDetailInline]
     extra = 0
 
+class OrderDetailInline(admin.StackedInline):
+    model = OrderDetail
+    extra = 0
+
+
+
 @admin.register(ProductCategory)
 class ProductCategoryAdmin(admin.ModelAdmin):
     list_display = ('category_name','all_products',)
@@ -72,13 +78,13 @@ class ProductDetailAdmin(admin.ModelAdmin):
 
 @admin.register(StockMovement)
 class StockMovementAdmin(admin.ModelAdmin):
-    list_display = ('product_detail','movement_type','quantity','total_price','processed_by','date_time',)
+    list_display = ('product_detail','movement_type','quantity','total_price','date_time',)
     list_filter = ('movement_type',)
     fieldsets = (
-        ('Stock Movement Info', {'fields': ('product_detail','movement_type','quantity','total_price','processed_by','date_time',)}),
+        ('Stock Movement Info', {'fields': ('product_detail','movement_type','quantity','total_price','date_time',)}),
     )
     add_fieldsets = (
-        ('New Stock Movement', {'fields': ('product_detail','movement_type','quantity','total_price','processed_by','date_time',)}),
+        ('New Stock Movement', {'fields': ('product_detail','movement_type','quantity','total_price','date_time',)}),
     )
     search_fields = ('product_detail','date_time',)
     ordering = ('date_time',)
@@ -88,6 +94,53 @@ class StockMovementAdmin(admin.ModelAdmin):
         # make 'status' field read-only
         if request.user:
             return ['date_time',]
+        return []
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('order_number','client','status','total_amount','payment_method','created_date',)
+    list_filter = ('status','created_date',)
+    fieldsets = (
+        ('Client Order', {'fields': ('order_number','client','status','total_amount','payment_method','created_date',)}),
+    )
+    add_fieldsets = (
+        ('New Client Order', {'fields': ('order_number','client','status','total_amount','payment_method','created_date',)}),
+    )
+    search_fields = ('client','order_number','created_date',)
+    ordering = ('created_date',)
+    list_per_page = 20
+    inlines = [
+        OrderDetailInline,
+    ]
+
+    def get_readonly_fields(self, request, obj=None):
+        # make 'status' field read-only
+        if request.user.is_superuser == True:
+            return ['created_date',]
+        elif not request.user.is_superuser == True:
+            return ['order_number','client','total_amount','payment_method','created_date',]
+        return []
+
+
+@admin.register(OrderDetail)
+class OrderDetailAdmin(admin.ModelAdmin):
+    list_display = ('order','product_detail','quantity',)
+    list_filter = ('order',)
+    fieldsets = (
+        ('Order Details', {'fields': ('order','product_detail','quantity',)}),
+    )
+    add_fieldsets = (
+        ('New Order Details', {'fields': ('order','product_detail','quantity',)}),
+    )
+    search_fields = ('order',)
+    ordering = ('order',)
+    list_per_page = 20
+
+    def get_readonly_fields(self, request, obj=None):
+        # make 'status' field read-only
+        if not request.user.is_superuser == True:
+            return ['order','product_detail','quantity',]
         return []
 
 
@@ -109,7 +162,9 @@ def get_app_list(self, request, app_label=None):
                     'ProductCategory': 1,
                     'Product': 2,
                     'ProductDetail': 3,
-                    'StockMovement': 4,
+                    'Order': 4,
+                    'OrderDetail':5,
+                    'StockMovement': 6,
                 }
                 app['models'].sort(key=lambda x: ordering[x['name']])
 
