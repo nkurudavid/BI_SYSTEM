@@ -20,7 +20,7 @@ class Product(models.Model):
 
 
 class ProductDetail(models.Model):
-    product = models.ForeignKey(Product, verbose_name="Product", related_name="Details", on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, verbose_name="Product", related_name="details", on_delete=models.CASCADE)
     color = models.CharField(verbose_name="Product Color", max_length=50, blank=False, null=False)
     quantity = models.FloatField(verbose_name="Product Quantity", default=0.0, null=False)
     picture = models.ImageField(

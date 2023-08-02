@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
 
 from . manager import UserManager
 
@@ -16,6 +18,7 @@ class User(AbstractUser):
     email = models.EmailField(verbose_name="Email", max_length=255, unique=True, blank=False)
     gender = models.CharField(verbose_name="Gender", choices=Gender.choices, default=Gender.SELECT, max_length=10)
     is_manager = models.BooleanField(verbose_name="Is Manger", default=False)
+    is_client = models.BooleanField(verbose_name="Is Client", default=False)
 
     username = None
 
@@ -30,3 +33,12 @@ class User(AbstractUser):
 
     def __str__(self):
         return "{} {}".format(self.first_name, self.last_name)
+
+
+
+class ClientProfile(models.Model):
+    client = models.OneToOneField(settings.AUTH_USER_MODEL, verbose_name="Client", on_delete=models.CASCADE)
+    phone_number = PhoneNumberField(verbose_name = "Phone Number", blank=True, unique=True)
+    location = models.CharField(verbose_name="Location", max_length=100, blank=True, null=True)
+    def __str__(self):
+        return "{} {}".format(self.client.first_name, self.client.last_name)

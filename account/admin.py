@@ -1,18 +1,18 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
-from .models import User
+from .models import User, ClientProfile
 
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
     list_display = ('email', 'first_name', 'last_name', 'gender', 'is_active', 'last_login',)
     search_fields = ('email', 'first_name', 'last_name')
-    list_filter = ('is_manager', 'is_superuser', 'is_active')
+    list_filter = ('is_client', 'is_manager', 'is_superuser', 'is_active')
     fieldsets = (
         ('User Credential', {'fields': ('email', 'password')}),
-        ('Personal Info', {'fields': ('first_name', 'last_name', 'gender', ('profilePicture',),)}),
-        ('Permissions', {'fields': (('is_active', 'is_staff', 'is_manager', 'is_superuser'), 'user_permissions',)}),
+        ('Personal Info', {'fields': ('first_name', 'last_name', 'gender',)}),
+        ('Permissions', {'fields': (('is_manager','is_client'),('is_active', 'is_staff', 'is_superuser'), 'user_permissions',)}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
     add_fieldsets = (
@@ -26,14 +26,33 @@ class CustomUserAdmin(UserAdmin):
         }),
         ('Permission', {
             'classes': ('collapse',),
-            'fields': (('is_active', 'is_staff', 'is_manager', 'is_superuser'), 'user_permissions',),
+            'fields': (('is_manager','is_client'),('is_active', 'is_staff', 'is_superuser'), 'user_permissions',),
         }),
     )
     ordering = ('email',)
     list_editable = ()
-    list_per_page = 10
-    date_hierarchy = ('date_joined')
+    list_per_page = 20
     filter_horizontal = ('groups', 'user_permissions',)
+
+
+
+@admin.register(ClientProfile)
+class ClientProfileAdmin(admin.ModelAdmin):
+    list_display = ('client', 'phone_number', 'location',)
+    search_fields = ('client', 'phone_number',)
+    fieldsets = (
+        ('User Profile', {'fields': ('client', 'phone_number', 'location',)}),
+    )
+    add_fieldsets = (
+        ('New Profile', {
+            'classes': ('wide',),
+            'fields': ('client', 'phone_number', 'location',),
+        }),
+    )
+    ordering = ('client',)
+    list_editable = ()
+    list_per_page = 20
+
 
 
 admin.site.unregister(Group)
