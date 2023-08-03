@@ -152,9 +152,9 @@ USE_TZ = True
 
 
 # static file directory
-STATIC_URL = '/assets/'
+STATIC_URL = '/statics/'
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'assets'),
+    os.path.join(BASE_DIR, 'statics'),
 )
 
 # ADDING THE IMAGES OR VIDEOS
