@@ -51,18 +51,23 @@ class Order(models.Model):
     def __str__(self):
         return f"{self.order_number} - {self.client.first_name} {self.client.last_name}"
 
-    def save(self, *args, **kwargs):
-        if self.status == Order.OrderStatus.SUCCESS and not self.pk:
-            # Create StockMovement instances for each OrderDetail when the order status is set to "Success"
-            for order_detail in self.order_details.all():
-                StockMovement.objects.create(
-                    product_detail=order_detail.product,
-                    movement_type=StockMovement.MovementType.STOCK_OUT,
-                    quantity=order_detail.quantity,
-                    total_price=order_detail.product_detail.product.price * order_detail.quantity,
-                )
+    # def save(self, *args, **kwargs):
+    #     if self.status == Order.OrderStatus.SUCCESS and not self.pk:
+    #         # Get the user who is currently logged in and changing the order status to "Success"
+    #         User = get_user_model()
+    #         user = User.objects.get(username=self._user_username)
 
-        super().save(*args, **kwargs)
+    #         # Create StockMovement instances for each OrderDetail when the order status is set to "Success"
+    #         for order_detail in self.order_details.all():
+    #             StockMovement.objects.create(
+    #                 product_detail=order_detail.product,
+    #                 movement_type=StockMovement.MovementType.STOCK_OUT,
+    #                 quantity=order_detail.quantity,
+    #                 total_price=order_detail.product_detail.product.price * order_detail.quantity,
+    #                 processed_by=user
+    #             )
+
+    #     super().save(*args, **kwargs)
 
 
 class OrderDetail(models.Model):
@@ -83,6 +88,7 @@ class StockMovement(models.Model):
     movement_type = models.CharField(verbose_name="Movement", choices=MovementType.choices, max_length=10)
     quantity = models.FloatField(verbose_name="Quantity", default=0.0, null=False)
     total_price = models.FloatField(verbose_name="Total Price", default=0.0, null=False)
+    processed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     date_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

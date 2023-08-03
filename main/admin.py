@@ -78,13 +78,13 @@ class ProductDetailAdmin(admin.ModelAdmin):
 
 @admin.register(StockMovement)
 class StockMovementAdmin(admin.ModelAdmin):
-    list_display = ('product_detail','movement_type','quantity','total_price','date_time',)
+    list_display = ('product_detail','movement_type','quantity','total_price','processed_by','date_time',)
     list_filter = ('movement_type',)
     fieldsets = (
-        ('Stock Movement Info', {'fields': ('product_detail','movement_type','quantity','total_price','date_time',)}),
+        ('Stock Movement Info', {'fields': ('product_detail','movement_type','quantity','total_price','processed_by','date_time',)}),
     )
     add_fieldsets = (
-        ('New Stock Movement', {'fields': ('product_detail','movement_type','quantity','total_price','date_time',)}),
+        ('New Stock Movement', {'fields': ('product_detail','movement_type','quantity','total_price','processed_by','date_time',)}),
     )
     search_fields = ('product_detail','date_time',)
     ordering = ('date_time',)
