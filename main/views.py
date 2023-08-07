@@ -1,5 +1,6 @@
 from django.shortcuts import render
 
+from main.models import *
 
 
 # Create your views here.
@@ -9,7 +10,11 @@ def handle_not_found(request, exception):
 
 
 def home(request):
-    return render(request, 'main/home.html');
+    categories = ProductCategory.objects.filter()
+    context = {
+        'categories': categories,
+    }
+    return render(request, 'main/home.html', context);
 
 
 
@@ -24,7 +29,13 @@ def contact(request):
 
 
 def shop(request):
-    return render(request, 'main/shop.html');
+    categories = ProductCategory.objects.filter()
+    products = Product.objects.filter()
+    context = {
+        'categories': categories,
+        'products': products,
+    }
+    return render(request, 'main/shop.html', context);
 
 
 
