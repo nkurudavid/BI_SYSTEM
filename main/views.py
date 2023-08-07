@@ -4,7 +4,8 @@ from django.shortcuts import render
 
 # Create your views here.
 def handle_not_found(request, exception):
-    return render(request, 'page_404/404.html')
+    return render(request, 'main/404.html')
+
 
 
 def home(request):
@@ -12,8 +13,18 @@ def home(request):
 
 
 
+def about(request):
+    return render(request, 'main/about.html');
+
+
+
+def contact(request):
+    return render(request, 'main/contact.html');
+
+
+
 def shop(request):
-    return render(request, 'main/product.html');
+    return render(request, 'main/shop.html');
 
 
 
@@ -39,11 +50,6 @@ def order_confirmation(request):
 
 def order_tracking(request):
     return render(request, 'main/tracking.html');
-
-
-
-def contact(request):
-    return render(request, 'main/contact.html');
 
 
 
