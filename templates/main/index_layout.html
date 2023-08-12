@@ -84,10 +84,17 @@
   </head>
 
   <body>
+    <!--contents  -->
     {% block front_content %}{% endblock %}
+    <!-- /contents -->
 
-    <!-- Google Map -->
-    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDc3LRykbLB-y8MuomRUIY0qH5S6xgBLX4"></script>
+    {% if messages %} {% for message in messages %}
+    <script>
+      //<!--contents message displayed-->
+      alert("{{ message }}");
+      //<!-- / .contents message displayed-->
+    </script>
+    {% endfor %} {% endif %}
 
     <!-- Plugins JS File -->
     <script src="{% static 'front/assets/js/jquery.min.js' %}"></script>

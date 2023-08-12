@@ -54,7 +54,8 @@
                 role="tabpanel"
                 aria-labelledby="signin-tab"
               >
-                <form action="" method="POST">
+                <form action="{% url 'client_login' %}" method="POST">
+                  {% csrf_token %}
                   <div class="form-group">
                     <label for="email">Email address *</label>
                     <input
@@ -99,7 +100,8 @@
                 role="tabpanel"
                 aria-labelledby="register-tab"
               >
-                <form action="" method="POST">
+                <form action="{% url 'client_register' %}" method="POST">
+                  {% csrf_token %}
                   <div class="form-group">
                     <label for="fist_name">First Name</label>
                     <input

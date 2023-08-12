@@ -7,8 +7,15 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),
     path('shop/', views.shop, name='shop'),
-    path('shop/product_details/', views.product_details, name='product_details'),
+    path('shop/category/<str:name>/', views.shopCategory, name='shop_category'),
+    path('shop/search/', views.search_result, name='search_result'),
+    path('shop/search/<str:search_data>/', views.search_result, name='search_result'),
+    path('shop/product/<int:pk>/product_details/', views.product_details, name='product_details'),
+    # cart urls
     path('shop/cart/', views.shop_cart, name='shop_cart'),
+    path('shop/cart/add_to_cart/<int:product_id>', views.addToCart, name='add_to_cart'),
+    path('shop/cart/remove_from_cart/<int:product_id>', views.removeFromCart, name='remove_from_cart'),
+
     path('shop/checkout/', views.shop_checkout, name='shop_checkout'),
     path('shop/order_confirmation/', views.order_confirmation, name='order_confirmation'),
     path('shop/order_tracking/', views.order_tracking, name='order_tracking'),

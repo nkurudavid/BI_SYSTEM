@@ -17,17 +17,6 @@
         <!-- End .page-header -->
         <nav aria-label="breadcrumb" class="breadcrumb-nav mb-2">
           <div class="container">
-            {% if not selectedCategory %}
-            <ol class="breadcrumb">
-              <li class="breadcrumb-item">
-                <a href="{% url 'home' %}">Home</a>
-              </li>
-              <li class="breadcrumb-item">
-                <a href="{% url 'shop' %}">Shop</a>
-              </li>
-              <li class="breadcrumb-item active" aria-current="page">List</li>
-            </ol>
-            {% else %}
             <ol class="breadcrumb">
               <li class="breadcrumb-item">
                 <a href="{% url 'home' %}">Home</a>
@@ -36,10 +25,9 @@
                 <a href="{% url 'shop' %}">Shop</a>
               </li>
               <li class="breadcrumb-item active" aria-current="page">
-                Category - {{selectedCategory.category_name}}
+                Search Result
               </li>
             </ol>
-            {% endif %}
           </div>
           <!-- End .container -->
         </nav>
@@ -51,29 +39,23 @@
               <div class="col-lg-9">
                 <div class="toolbox">
                   <div class="toolbox-left">
-                    {% if not selectedCategory %}
-                    <div class="toolbox-info">ALL Products</div>
-                    {% else %}
-                    <div class="toolbox-info">
-                      {{selectedCategory.category_name}} Products
-                    </div>
-                    {% endif %}
+                    <div class="toolbox-info">ALL Found Products</div>
                     <!-- End .toolbox-info -->
                   </div>
                   <!-- End .toolbox-left -->
                 </div>
                 <!-- End .toolbox -->
+
                 <div class="products mb-3">
-                  <div class="row justify-content-center">
-                    {% if products %}{% for data in products %}
-                    <div class="col-6 col-md-4 col-lg-3">
-                      <div class="product product-7 text-center">
+                  {% if products %} {% for product in products %}
+                  <div class="product product-list">
+                    <div class="row">
+                      <div class="col-6 col-lg-3">
                         <figure class="product-media">
-                          <span class="product-label label-new">New</span>
-                          <a href="{% url 'product_details' data.id %}">
-                            {% if data.picture %}
+                          <a href="product.html">
+                            {% if product.details.first.picture %}
                             <img
-                              src="{{data.picture.url}}"
+                              src="{{product.details.first.picture.url}}"
                               alt="Product image"
                               class="product-image"
                             />
@@ -85,47 +67,75 @@
                             />
                             {% endif %}
                           </a>
-
-                          <div class="product-action">
-                            <a
-                              href="{% url 'add_to_cart' data.id %}"
-                              class="btn-product btn-cart"
-                              ><span>add to cart</span></a
-                            >
-                          </div>
-                          <!-- End .product-action -->
                         </figure>
                         <!-- End .product-media -->
+                      </div>
+                      <!-- End .col-sm-6 col-lg-3 -->
 
-                        <div class="product-body">
+                      <div class="col-6 col-lg-3 order-lg-last">
+                        <div class="product-list-action">
+                          <div class="product-price">Frw {{product.price}}</div>
+                          <!-- End .product-price -->
+
+                          <a href="#" class="btn-product btn-cart"
+                            ><span>add to cart</span></a
+                          >
+                        </div>
+                        <!-- End .product-list-action -->
+                      </div>
+                      <!-- End .col-sm-6 col-lg-3 -->
+
+                      <div class="col-lg-6">
+                        <div class="product-body product-action-inner">
                           <div class="product-cat">
-                            <a href="{% url 'product_details' data.id %}">
-                              {{data.product.category.category_name }}
-                            </a>
+                            <a href="#">{{product.category.category_name }}</a>
                           </div>
                           <!-- End .product-cat -->
                           <h3 class="product-title">
-                            <a href="{% url 'product_details' data.id %}">
-                              {{data.color }} {{data.product.product_name }}
+                            <a href="{% url 'product_details' %}">
+                              {{product.product_name}}
                             </a>
                           </h3>
                           <!-- End .product-title -->
-                          <div class="product-price">
-                            Frw {{data.product.price}}
+
+                          <div class="product-content">
+                            <p>{{product.description}}</p>
                           </div>
-                          <!-- End .product-price -->
+                          <!-- End .product-content -->
+
+                          <div class="product-nav product-nav-thumbs">
+                            {% for images in product.details.all %}
+                            <a href="#">
+                              {% if images.picture %}
+                              <img
+                                src="{{images.picture.url}}"
+                                alt="Product image"
+                                class="product-image"
+                              />
+                              {% else %}
+                              <img
+                                src=""
+                                alt="Product image"
+                                class="product-image"
+                              />
+                              {% endif %}
+                            </a>
+                            {% endfor %}
+                          </div>
+                          <!-- End .product-nav -->
                         </div>
                         <!-- End .product-body -->
                       </div>
-                      <!-- End .product -->
+                      <!-- End .col-lg-6 -->
                     </div>
-                    <!-- End .col-sm-6 col-lg-4 -->
-                    {% endfor %} {% else %}
-                    <p>No product found.</p>
-                    {% endif %}
+                    <!-- End .row -->
                   </div>
-                  <!-- End .row -->
+                  <!-- End .product -->
+                  {% endfor %} {% else %}
+                  <p>No product found.</p>
+                  {% endif %}
                 </div>
+                <!-- End .products -->
               </div>
               <!-- End .col-lg-9 -->
               <aside class="col-lg-3 order-lg-first">
@@ -137,9 +147,6 @@
                       <nav class="side-nav">
                         {% if categories %}
                         <ul class="menu-vertical sf-arrows sf-js-enabled">
-                          <li>
-                            <a href="{% url 'shop' %}"> All </a>
-                          </li>
                           {% for data in categories %}
                           <li>
                             <a
