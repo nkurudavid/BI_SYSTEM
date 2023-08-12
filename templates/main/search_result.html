@@ -47,15 +47,16 @@
                 <!-- End .toolbox -->
 
                 <div class="products mb-3">
-                  {% if products %} {% for product in products %}
-                  <div class="product product-list">
-                    <div class="row">
-                      <div class="col-6 col-lg-3">
+                  <div class="row justify-content-center">
+                    {% if products %}{% for data in products %}
+                    <div class="col-6 col-md-4 col-lg-3">
+                      <div class="product product-7 text-center">
                         <figure class="product-media">
-                          <a href="product.html">
-                            {% if product.details.first.picture %}
+                          <span class="product-label label-new">New</span>
+                          <a href="{% url 'product_details' data.id %}">
+                            {% if data.picture %}
                             <img
-                              src="{{product.details.first.picture.url}}"
+                              src="{{data.picture.url}}"
                               alt="Product image"
                               class="product-image"
                             />
@@ -67,73 +68,46 @@
                             />
                             {% endif %}
                           </a>
+
+                          <div class="product-action">
+                            <a
+                              href="{% url 'add_to_cart' data.id %}"
+                              class="btn-product btn-cart"
+                              ><span>add to cart</span></a
+                            >
+                          </div>
+                          <!-- End .product-action -->
                         </figure>
                         <!-- End .product-media -->
-                      </div>
-                      <!-- End .col-sm-6 col-lg-3 -->
 
-                      <div class="col-6 col-lg-3 order-lg-last">
-                        <div class="product-list-action">
-                          <div class="product-price">Frw {{product.price}}</div>
-                          <!-- End .product-price -->
-
-                          <a href="#" class="btn-product btn-cart"
-                            ><span>add to cart</span></a
-                          >
-                        </div>
-                        <!-- End .product-list-action -->
-                      </div>
-                      <!-- End .col-sm-6 col-lg-3 -->
-
-                      <div class="col-lg-6">
-                        <div class="product-body product-action-inner">
+                        <div class="product-body">
                           <div class="product-cat">
-                            <a href="#">{{product.category.category_name }}</a>
+                            <a href="{% url 'product_details' data.id %}">
+                              {{data.product.category.category_name }}
+                            </a>
                           </div>
                           <!-- End .product-cat -->
                           <h3 class="product-title">
-                            <a href="{% url 'product_details' %}">
-                              {{product.product_name}}
+                            <a href="{% url 'product_details' data.id %}">
+                              {{data.color }} {{data.product.product_name }}
                             </a>
                           </h3>
                           <!-- End .product-title -->
-
-                          <div class="product-content">
-                            <p>{{product.description}}</p>
+                          <div class="product-price">
+                            Frw {{data.product.price}}
                           </div>
-                          <!-- End .product-content -->
-
-                          <div class="product-nav product-nav-thumbs">
-                            {% for images in product.details.all %}
-                            <a href="#">
-                              {% if images.picture %}
-                              <img
-                                src="{{images.picture.url}}"
-                                alt="Product image"
-                                class="product-image"
-                              />
-                              {% else %}
-                              <img
-                                src=""
-                                alt="Product image"
-                                class="product-image"
-                              />
-                              {% endif %}
-                            </a>
-                            {% endfor %}
-                          </div>
-                          <!-- End .product-nav -->
+                          <!-- End .product-price -->
                         </div>
                         <!-- End .product-body -->
                       </div>
-                      <!-- End .col-lg-6 -->
+                      <!-- End .product -->
                     </div>
-                    <!-- End .row -->
+                    <!-- End .col-sm-6 col-lg-4 -->
+                    {% endfor %} {% else %}
+                    <p>No product found.</p>
+                    {% endif %}
                   </div>
-                  <!-- End .product -->
-                  {% endfor %} {% else %}
-                  <p>No product found.</p>
-                  {% endif %}
+                  <!-- End .row -->
                 </div>
                 <!-- End .products -->
               </div>

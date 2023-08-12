@@ -57,7 +57,10 @@
                         </h1>
                         <!-- End .intro-title -->
 
-                        <a href="category.html" class="btn btn-outline-white">
+                        <a
+                          href="{% url 'shop' %}"
+                          class="btn btn-outline-white"
+                        >
                           <span>SHOP NOW</span>
                           <i class="icon-long-arrow-right"></i>
                         </a>
@@ -82,12 +85,15 @@
                       <!-- End .slide-image -->
 
                       <div class="intro-content">
-                        <h3 class="intro-subtitle">News and Inspiration</h3>
+                        <h3 class="intro-subtitle">Shop with us</h3>
                         <!-- End .h3 intro-subtitle -->
                         <h1 class="intro-title">New Arrivals</h1>
                         <!-- End .intro-title -->
 
-                        <a href="category.html" class="btn btn-outline-white">
+                        <a
+                          href="{% url 'shop' %}"
+                          class="btn btn-outline-white"
+                        >
                           <span>SHOP NOW</span>
                           <i class="icon-long-arrow-right"></i>
                         </a>
@@ -114,178 +120,6 @@
         <div class="mb-6"></div>
         <!-- End .mb-6 -->
 
-        {% if categories %}
-        <div class="container">
-          <div class="heading heading-center mb-6">
-            <h2 class="title">Recent Arrivals</h2>
-            <!-- End .title -->
-            <ul
-              class="nav nav-pills nav-border-anim justify-content-center"
-              role="tablist"
-            >
-              <li class="nav-item">
-                <a
-                  class="nav-link active"
-                  id="list_all"
-                  data-toggle="tab"
-                  href="#list_all"
-                  role="tab"
-                  aria-controls="list_all_tab"
-                  aria-selected="true"
-                >
-                  All
-                </a>
-              </li>
-              {% for data in categories %}
-              <li class="nav-item">
-                <a
-                  class="nav-link"
-                  id="list_{{data.id}}"
-                  data-toggle="tab"
-                  href="#list_{{data.id}}"
-                  role="tab"
-                  aria-controls="list_{{data.id}}"
-                  aria-selected="false"
-                >
-                  {{data.category_name}}
-                </a>
-              </li>
-              {% endfor %}
-            </ul>
-          </div>
-          <!-- End .heading -->
-
-          <div class="tab-content">
-            <div
-              class="tab-pane p-0 fade show active"
-              id="list_all"
-              role="tabpanel"
-              aria-labelledby="list_all_tab"
-            >
-              <div class="products">
-                <div class="row justify-content-center">
-                  {% for category in categories %}
-                  <!-- -->
-                  {% for product in category.products.all %}
-                  <div class="col-6 col-md-4 col-lg-3">
-                    <div class="product product-11 mt-v3 text-center">
-                      <figure class="product-media">
-                        <a href="product.html">
-                          {% if product.details.first.picture %}
-                          <img
-                            src="{{product.details.first.picture.url}}"
-                            alt="Product image"
-                            class="product-image"
-                          />
-                          {% else %}
-                          <img
-                            src=""
-                            alt="Product image"
-                            class="product-image"
-                          />
-                          {% endif %}
-                        </a>
-                      </figure>
-                      <!-- End .product-media -->
-
-                      <div class="product-body">
-                        <h3 class="product-title">
-                          <a href="product.html">{{product.product_name}}</a>
-                        </h3>
-                        <!-- End .product-title -->
-                        <div class="product-price">Frw {{product.price}}</div>
-                        <!-- End .product-price -->
-                      </div>
-                      <!-- End .product-body -->
-                      <div class="product-action">
-                        <a href="#" class="btn-product btn-cart"
-                          ><span>add to cart</span></a
-                        >
-                      </div>
-                      <!-- End .product-action -->
-                    </div>
-                    <!-- End .product -->
-                  </div>
-                  {% endfor %}
-                  <!-- -->
-                  {% endfor %}
-                </div>
-                <!-- End .row -->
-              </div>
-              <!-- End .products -->
-            </div>
-            <!-- .End .tab-pane -->
-            {% for category in categories %}
-            <div
-              class="tab-pane p-0 fade show active"
-              id="list_{{category.id}}"
-              role="tabpanel"
-              aria-labelledby="list_{{category.id}}_tab"
-            >
-              <div class="products">
-                <div class="row justify-content-center">
-                  {% for product in category.products.all %}
-                  <div class="col-6 col-md-4 col-lg-3">
-                    <div class="product product-11 mt-v3 text-center">
-                      <figure class="product-media">
-                        <a href="product.html">
-                          {% if product.details.first.picture %}
-                          <img
-                            src="{{product.details.first.picture.url}}"
-                            alt="Product image"
-                            class="product-image"
-                          />
-                          {% else %}
-                          <img
-                            src=""
-                            alt="Product image"
-                            class="product-image"
-                          />
-                          {% endif %}
-                        </a>
-                      </figure>
-                      <!-- End .product-media -->
-
-                      <div class="product-body">
-                        <h3 class="product-title">
-                          <a href="product.html">{{product.product_name}}</a>
-                        </h3>
-                        <!-- End .product-title -->
-                        <div class="product-price">Frw {{product.price}}</div>
-                        <!-- End .product-price -->
-                      </div>
-                      <!-- End .product-body -->
-                      <div class="product-action">
-                        <a href="#" class="btn-product btn-cart"
-                          ><span>add to cart</span></a
-                        >
-                      </div>
-                      <!-- End .product-action -->
-                    </div>
-                    <!-- End .product -->
-                  </div>
-                  <!-- End .col-sm-6 col-md-4 col-lg-3 -->
-                  {% endfor %}
-                </div>
-                <!-- End .row -->
-              </div>
-              <!-- End .products -->
-            </div>
-            <!-- .End .tab-pane -->
-            {% endfor %}
-          </div>
-          <!-- End .tab-content -->
-          <div class="more-container text-center">
-            <a href="#" class="btn btn-outline-darker btn-more"
-              ><span>Load more products</span
-              ><i class="icon-long-arrow-down"></i
-            ></a>
-          </div>
-          <!-- End .more-container -->
-        </div>
-        <!-- End .container -->
-        {% endif %}
-
         <div
           class="cta cta-display bg-image pt-4 pb-4"
           style="
@@ -299,19 +133,25 @@
                   class="row no-gutters flex-column flex-sm-row align-items-sm-center"
                 >
                   <div class="col">
-                    <h3 class="cta-title text-white">Sign Up & Get 10% Off</h3>
+                    <h3 class="cta-title text-white">
+                      Sign Up & Start shopping with us
+                    </h3>
                     <!-- End .cta-title -->
                     <p class="cta-desc text-white">
-                      Molla presents the best in interior design
+                      Our products are waiting for you, the best quality fabric
                     </p>
                     <!-- End .cta-desc -->
                   </div>
                   <!-- End .col -->
 
                   <div class="col-auto">
-                    <a href="login.html" class="btn btn-outline-white"
-                      ><span>SIGN UP</span><i class="icon-long-arrow-right"></i
-                    ></a>
+                    <a
+                      class="btn btn-outline-white"
+                      href="#signin-modal"
+                      data-toggle="modal"
+                    >
+                      <span>SIGN UP</span><i class="icon-long-arrow-right"></i>
+                    </a>
                   </div>
                   <!-- End .col-auto -->
                 </div>

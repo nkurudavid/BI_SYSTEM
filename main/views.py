@@ -209,39 +209,43 @@ def shop_cart(request):
             total_price += item['subtotal']
             cart_items.append(item)
 
-        # update cart values
-        if 'update_cart' in request.POST:
-            for item in cart_items:
-                new_quantity = int(request.POST.get(f'quantity_{{item.p_data.id}}', 0))
-                if new_quantity > 0:
-                    item['quantity'] = new_quantity
-                    item['subtotal'] = p_data.product.price * item['quantity']
-                else:
-                    if str(p_data.id) in cart:
-                        del cart[str(p_data.id)]
-
-            request.session['cart'] = cart
-            return redirect(shop_cart)
-
         else:
             # return the value to template
             context ={
                 'title': 'Shop - Cart',
                 'cart_items': cart_items,
                 'total_price': total_price,
-                'my_cart': cart
             }
             return render(request, 'main/shop_cart.html', context)
 
 
 
 def addToCart(request, product_id):
-    product = ProductDetail.objects.get(id=product_id)
+    # get quantity is provided
+    if request.POST.get('qty'):
+        quantity = float(request.POST.get('qty'))
+    else:
+        quantity = 1
+
     cart = request.session.get('cart', {})
     cart_item = cart.get(str(product_id), {'quantity': 0})
-    cart_item['quantity'] += 1
+    cart_item['quantity'] += quantity
     cart[str(product_id)] = cart_item
     request.session['cart'] = cart
+    return redirect(shop_cart)
+
+
+def updateCart(request):
+    # update cart values
+    if 'update_cart' in request.POST:
+        cart = request.session.get('cart', {})
+        for product_id, quantity in request.POST.items():
+            if product_id.startswith('quantity_'):
+                product_id = product_id.split('_')[1]
+                cart_item = cart.get(str(product_id), {'quantity': 0})
+                cart_item['quantity'] = float(quantity)
+                cart[str(product_id)] = cart_item
+        request.session['cart'] = cart
     return redirect(shop_cart)
 
 
