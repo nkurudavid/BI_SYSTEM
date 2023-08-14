@@ -2,11 +2,13 @@ from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model, authenticate, login, logout, update_session_auth_hash
 
 from django.db.models import Q
 
 from main.models import *
-
+from account.models import ClientProfile
 
 
 # my functions
@@ -307,27 +309,94 @@ def order_tracking(request):
 
 
 def client_login(request):
-    if 'search' in request.POST:
-        search_data = request.POST.get("search_data")
+    if not request.user.is_authenticated or request.user.is_client!=True:
+        if 'login' in request.POST:
+            email = request.POST.get('email')
+            password = request.POST.get('password')
 
-        if search_data:
-            # Call the search_result function and pass the data
-            return search_result(request, search_data)
-        else:
-            return redirect(shop)
+            user = authenticate(request, email=email, password=password)
+
+            if user is not None and user.is_client==True:
+                login(request, user)
+                messages.success(request, ('Hi '+user.first_name+', you are logged in'))
+                return redirect(client_dashboard)
+            else:
+                messages.error(request, ('User Email or Password is not correct! Try agin...'))
+                return redirect(home)
     else:
-        return render(request, 'main/login.html')
+        return redirect(client_dashboard)
+
 
 
 
 def client_register(request):
-    if 'search' in request.POST:
-        search_data = request.POST.get("search_data")
+    if not request.user.is_authenticated or request.user.is_client!=True:
+        if 'sign_up' in request.POST:
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
+            gender = request.POST.get('gender')
+            phone_number = request.POST.get('phone_number')
+            location = request.POST.get('location')
+            email = request.POST.get('email')
+            password1 = request.POST.get('password1')
+            password2 = request.POST.get('password2')
 
-        if search_data:
-            # Call the search_result function and pass the data
-            return search_result(request, search_data)
-        else:
-            return redirect(shop)
+            if first_name and last_name and gender and phone_number and location and email and password1 and password2:
+                if get_user_model().objects.filter(email=email).exists():
+                    messages.error(request, ('Email address already taken'))
+                    return redirect(home)
+                if password1 and password2 and password1 != password2:
+                    messages.error(request, ('Passwords do not match'))
+                    return redirect(home)
+                else:
+                    # Create a new user object with the submitted data
+                    user = get_user_model().objects.create_user(
+                        first_name=first_name,
+                        last_name=last_name,
+                        gender=gender,
+                        is_client=True,
+                        email=email,
+                        password=password1,
+                    )
+                    if user:
+                        # get client account
+                        client = get_user_model().objects.get(email=email)
+                        # get client profile
+                        client_profile, created = ClientProfile.objects.get_or_create(client=client)
+
+                        # update client profile and save
+                        client_profile.phone_number=phone_number
+                        client_profile.location=location
+                        client_profile.save()
+
+                    user = authenticate(request, email=email, password=password1)
+                    if user is not None and user.is_client==True:
+                        login(request, user)
+                        messages.success(request, ('Hi '+user.first_name+', you are logged in'))
+                        return redirect(client_dashboard)
+            else:
+                messages.error(request, ('All field are required'))
+                return redirect(home)
     else:
-        return render(request, 'main/register.html')
+        return redirect(client_dashboard)
+
+
+
+@login_required(login_url='client_login')
+def client_logout(request):
+    logout(request)
+    messages.info(request, ('You are now Logged out.'))
+    return redirect(home)
+
+
+@login_required(login_url='client_login')
+def client_dashboard(request):
+    if request.user.is_authenticated and request.user.is_client==True:
+        context = {
+            'title': 'Client Account',
+        }
+        return render(request, 'main/client_account.html', context)
+    else:
+        messages.warning(request, ('You have to login to view the page!'))
+        return redirect(home)
+

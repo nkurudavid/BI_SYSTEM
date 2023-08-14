@@ -22,4 +22,6 @@ urlpatterns = [
     path('shop/order_tracking/', views.order_tracking, name='order_tracking'),
     path('login/', views.client_login, name='client_login'),
     path('register/', views.client_register, name='client_register'),
+    path('client_logout/', views.client_logout, name='client_logout'),
+    path('client_account/', views.client_dashboard, name='client_account'),
 ]

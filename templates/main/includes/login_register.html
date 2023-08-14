@@ -31,8 +31,9 @@
                   role="tab"
                   aria-controls="signin"
                   aria-selected="true"
-                  >Sign In</a
                 >
+                  Sign In
+                </a>
               </li>
               <li class="nav-item">
                 <a
@@ -43,8 +44,9 @@
                   role="tab"
                   aria-controls="register"
                   aria-selected="false"
-                  >Register</a
                 >
+                  Register
+                </a>
               </li>
             </ul>
             <div class="tab-content" id="tab-content-5">
@@ -102,64 +104,89 @@
               >
                 <form action="{% url 'client_register' %}" method="POST">
                   {% csrf_token %}
-                  <div class="form-group">
-                    <label for="fist_name">First Name</label>
-                    <input
-                      type="email"
-                      class="form-control"
-                      id="fist_name"
-                      name="fist_name"
-                      required
-                    />
+                  <div class="row">
+                    <div class="form-group col-6">
+                      <label for="id_first_name">First Name</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="id_first_name"
+                        name="first_name"
+                        required
+                      />
+                    </div>
+                    <div class="form-group col-6">
+                      <label for="id_last_name">Last Name</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="id_last_name"
+                        name="last_name"
+                        required
+                      />
+                    </div>
                   </div>
-                  <!-- End .form-group -->
                   <div class="form-group">
-                    <label for="last_name">Last Name</label>
+                    <label for="id_gender">Gender</label>
+                    <select
+                      class="form-control"
+                      id="id_gender"
+                      name="gender"
+                      required
+                    >
+                      <option selected disabled>Select Gender</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="id_phone_number">Phone Number</label>
                     <input
                       type="text"
                       class="form-control"
-                      id="last_name"
-                      name="last_name"
-                      required
+                      id="id_phone_number"
+                      name="phone_number"
                     />
                   </div>
-                  <!-- End .form-group -->
                   <div class="form-group">
-                    <label for="email">Email address *</label>
+                    <label for="id_location">Location</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="id_location"
+                      name="location"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="id_email">Email address *</label>
                     <input
                       type="email"
                       class="form-control"
-                      id="email"
+                      id="id_email"
                       name="email"
                       required
                     />
                   </div>
-                  <!-- End .form-group -->
-
                   <div class="form-group">
-                    <label for="password1">New Password *</label>
+                    <label for="id_password1">New Password *</label>
                     <input
                       type="password"
                       class="form-control"
-                      id="password1"
+                      id="id_password1"
                       name="password1"
                       required
                     />
                   </div>
-                  <!-- End .form-group -->
-
                   <div class="form-group">
-                    <label for="password2">Confirm Password *</label>
+                    <label for="id_password2">Confirm Password *</label>
                     <input
                       type="password"
                       class="form-control"
-                      id="password2"
+                      id="id_password2"
                       name="password2"
                       required
                     />
                   </div>
-                  <!-- End .form-group -->
-
                   <div class="form-footer">
                     <button
                       type="submit"
@@ -170,7 +197,6 @@
                       <i class="icon-long-arrow-right"></i>
                     </button>
                   </div>
-                  <!-- End .form-footer -->
                 </form>
               </div>
               <!-- .End .tab-pane -->
