@@ -45,6 +45,7 @@ class Order(models.Model):
     client = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Client", related_name="client_orders", on_delete=models.CASCADE)
     order_number = models.CharField(verbose_name="Order Number", max_length=100, unique=True, blank=False, null=False)
     status = models.CharField(verbose_name="Status", choices=OrderStatus.choices, default=OrderStatus.PENDING, max_length=10)
+    shipping_address = models.CharField(verbose_name="Shipping Address", max_length=100, blank=True, null=True)
     total_amount = models.FloatField(verbose_name="Total Amount", default=0.0, null=False)
     payment_method = models.CharField(verbose_name="Payment Method", max_length=10, blank=False, null=False)
     created_date = models.DateTimeField(auto_now_add=True)

@@ -322,7 +322,7 @@ def client_login(request):
                 return redirect(client_dashboard)
             else:
                 messages.error(request, ('User Email or Password is not correct! Try agin...'))
-                return redirect(home)
+                return redirect(shop)
     else:
         return redirect(client_dashboard)
 
@@ -376,27 +376,170 @@ def client_register(request):
                         return redirect(client_dashboard)
             else:
                 messages.error(request, ('All field are required'))
-                return redirect(home)
+                return redirect(shop)
     else:
         return redirect(client_dashboard)
 
 
 
-@login_required(login_url='client_login')
+
+@login_required(login_url='shop')
 def client_logout(request):
     logout(request)
     messages.info(request, ('You are now Logged out.'))
-    return redirect(home)
+    return redirect(shop)
 
 
-@login_required(login_url='client_login')
+
+
+@login_required(login_url='shop')
 def client_dashboard(request):
     if request.user.is_authenticated and request.user.is_client==True:
+        # client orders
+        orders = Order.objects.filter(client=request.user)
+        new_orders = Order.objects.filter(client=request.user, status='PENDING').count()
         context = {
             'title': 'Client Account',
+            'orders': orders,
+            'new_orders': new_orders,
+            'dashboard_active': 'active',
         }
         return render(request, 'main/client_account.html', context)
     else:
         messages.warning(request, ('You have to login to view the page!'))
-        return redirect(home)
+        return redirect(shop)
 
+
+
+@login_required(login_url='shop')
+def client_order_list(request):
+    if request.user.is_authenticated and request.user.is_client==True:
+        # client orders
+        orders = Order.objects.filter(client=request.user)
+        new_orders = Order.objects.filter(client=request.user, status='PENDING').count()
+        context = {
+            'title': 'Client Account',
+            'orders': orders,
+            'new_orders': new_orders,
+            'orders_active': 'active',
+        }
+        return render(request, 'main/client_order_list.html', context)
+    else:
+        messages.warning(request, ('You have to login to view the page!'))
+        return redirect(shop)
+
+
+
+
+@login_required(login_url='shop')
+def client_order_details(request, pk):
+    if request.user.is_authenticated and request.user.is_client==True:
+        order_id = pk
+        if Order.objects.filter(client=request.user, pk=order_id).exists():
+            # client orders
+            order = Order.objects.get(client=request.user, pk=order_id)
+            new_orders = Order.objects.filter(client=request.user, status='PENDING').count()
+            context = {
+                'title': 'Client Account',
+                'order': order,
+                'new_orders': new_orders,
+                'orders_active': 'active',
+            }
+            return render(request, 'main/client_order_details.html', context)
+        else:
+            messages.warning(request, ('Order not found'))
+            return redirect(client_order_list)
+    else:
+        messages.warning(request, ('You have to login to view the page!'))
+        return redirect(shop)
+
+
+
+
+@login_required(login_url='shop')
+def client_profile(request):
+    if request.user.is_authenticated and request.user.is_client==True:
+        if 'update_profile' in request.POST:
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
+            gender = request.POST.get('gender')
+            phone_number = request.POST.get('phone_number')
+            location = request.POST.get('location')
+
+            if first_name and last_name and gender and phone_number and location:
+                # get client account
+                get_user_model().objects.filter(email=request.user.email).update(
+                    first_name=first_name,
+                    last_name=last_name,
+                    gender=gender,
+                )
+
+                # get client profile
+                c_profile, created = ClientProfile.objects.get_or_create(client=get_user_model().objects.get(email=request.user.email))
+
+                # update client profile and save
+                c_profile.phone_number=phone_number
+                c_profile.location=location
+                c_profile.save()
+
+                messages.success(request, ('Profile updated successfully'))
+                return redirect(client_profile)
+            else:
+                messages.error(request, ('All field are required'))
+                return redirect(client_profile)
+
+        elif 'update_shipping_address' in request.POST:
+            shipping_address = request.POST.get('shipping_address')
+
+            if shipping_address:
+                # get client profile
+                c_profile, created = ClientProfile.objects.get_or_create(client=get_user_model().objects.get(email=request.user.email))
+
+                # update client shipping address and save
+                c_profile.shipping_address=shipping_address
+                c_profile.save()
+
+                messages.success(request, ('Shipping address updated successfully'))
+                return redirect(client_profile)
+            else:
+                messages.error(request, ('All field are required'))
+                return redirect(client_profile)
+
+        elif 'update_password' in request.POST:
+            old_password = request.POST.get("old_pass")
+            new_password = request.POST.get("pass1")
+            confirmed_new_password = request.POST.get("pass2")
+
+            if old_password and new_password and confirmed_new_password:
+                user = get_user_model().objects.get(email=request.user.email)
+                if not user.check_password(old_password):
+                    messages.error(request, "Your old password is not correct!")
+                    return redirect(client_profile)
+                else:
+                    if len(new_password) < 5:
+                        messages.warning(request, "Your password is too weak!")
+                        return redirect(client_profile)
+                    elif new_password != confirmed_new_password:
+                        messages.error(request, "Your new password not match the confirm password !")
+                        return redirect(client_profile)
+                    else:
+                        user.set_password(new_password)
+                        user.save()
+                        update_session_auth_hash(request, user)
+
+                        messages.success(request, "Your password has been changed successfully.!")
+                        return redirect(client_profile)
+            else:
+                messages.error(request, "Error , All fields are required !")
+                return redirect(client_profile)
+        else:
+            new_orders = Order.objects.filter(client=request.user, status='PENDING').count()
+            context = {
+                'title': 'Client Profile',
+                'new_orders': new_orders,
+                'profile_active': 'active',
+            }
+            return render(request, 'main/client_profile.html', context)
+    else:
+        messages.warning(request, ('You have to login to view the page!'))
+        return redirect(shop)

@@ -37,8 +37,9 @@ class User(AbstractUser):
 
 
 class ClientProfile(models.Model):
-    client = models.OneToOneField(settings.AUTH_USER_MODEL, verbose_name="Client", on_delete=models.CASCADE)
+    client = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="client_profile", verbose_name="Client", on_delete=models.CASCADE)
     phone_number = PhoneNumberField(verbose_name = "Phone Number", blank=True, unique=True)
     location = models.CharField(verbose_name="Location", max_length=100, blank=True, null=True)
+    shipping_address = models.CharField(verbose_name="Shipping Address", max_length=100, blank=True, null=True)
     def __str__(self):
         return "{} {}".format(self.client.first_name, self.client.last_name)

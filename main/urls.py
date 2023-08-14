@@ -24,4 +24,7 @@ urlpatterns = [
     path('register/', views.client_register, name='client_register'),
     path('client_logout/', views.client_logout, name='client_logout'),
     path('client_account/', views.client_dashboard, name='client_account'),
+    path('client_profile/', views.client_profile, name='client_profile'),
+    path('client_orders/', views.client_order_list, name='client_order_list'),
+    path('client_orders/<int:pk>/', views.client_order_details, name='client_order_details'),
 ]
