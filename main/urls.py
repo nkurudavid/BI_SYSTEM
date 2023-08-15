@@ -4,8 +4,8 @@ from main import views
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('about/', views.about, name='about'),
-    path('contact/', views.contact, name='contact'),
+    path('shop/about/', views.about, name='about'),
+    path('shop/contact/', views.contact, name='contact'),
     path('shop/', views.shop, name='shop'),
     path('shop/category/<str:name>/', views.shopCategory, name='shop_category'),
     path('shop/search/', views.search_result, name='search_result'),
@@ -19,12 +19,11 @@ urlpatterns = [
 
     path('shop/checkout/', views.shop_checkout, name='shop_checkout'),
     path('shop/order_confirmation/', views.order_confirmation, name='order_confirmation'),
-    path('shop/order_tracking/', views.order_tracking, name='order_tracking'),
-    path('login/', views.client_login, name='client_login'),
-    path('register/', views.client_register, name='client_register'),
-    path('client_logout/', views.client_logout, name='client_logout'),
-    path('client_account/', views.client_dashboard, name='client_account'),
-    path('client_profile/', views.client_profile, name='client_profile'),
-    path('client_orders/', views.client_order_list, name='client_order_list'),
-    path('client_orders/<int:pk>/', views.client_order_details, name='client_order_details'),
+    path('shop/client/login/', views.client_login, name='client_login'),
+    path('shop/client/register/', views.client_register, name='client_register'),
+    path('shop/client/logout/', views.client_logout, name='client_logout'),
+    path('shop/client/dashboard/', views.client_dashboard, name='client_account'),
+    path('shop/client/profile/', views.client_profile, name='client_profile'),
+    path('shop/client/order_list/', views.client_order_list, name='client_order_list'),
+    path('shop/client/order_list/<int:pk>/', views.client_order_details, name='client_order_details'),
 ]

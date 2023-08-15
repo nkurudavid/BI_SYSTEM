@@ -41,6 +41,7 @@ class ProductDetail(models.Model):
 class Order(models.Model):
     class OrderStatus(models.TextChoices):
         PENDING = "Pending", "Pending"
+        PROCESSING = "Processing", "Processing"
         SUCCESS = "Success", "Success"
     client = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Client", related_name="client_orders", on_delete=models.CASCADE)
     order_number = models.CharField(verbose_name="Order Number", max_length=100, unique=True, blank=False, null=False)
@@ -48,6 +49,7 @@ class Order(models.Model):
     shipping_address = models.CharField(verbose_name="Shipping Address", max_length=100, blank=True, null=True)
     total_amount = models.FloatField(verbose_name="Total Amount", default=0.0, null=False)
     payment_method = models.CharField(verbose_name="Payment Method", max_length=10, blank=False, null=False)
+    payment_id = models.CharField(verbose_name="Payment ID", max_length=10, blank=True, null=True)
     created_date = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return f"{self.order_number} - {self.client.first_name} {self.client.last_name}"

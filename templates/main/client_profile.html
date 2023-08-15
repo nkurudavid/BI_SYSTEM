@@ -19,7 +19,9 @@
           style="background-image: url('front/assets/images/page-header-bg.jpg')"
         >
           <div class="container">
-            <h1 class="page-title">My Account<span>Shop</span></h1>
+            <h1 class="page-title">
+              {{user.first_name}} {{user.last_name}}<span>My Account</span>
+            </h1>
             <p class="text-muted lead">If you have any questions, please feel free to <a href="{% url 'contact' %}">contact us</a>, our customer service center is working for you 24/7.</p>
           </div>
           <!-- End .container -->
@@ -30,8 +32,11 @@
             <ol class="breadcrumb">
               <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
               <li class="breadcrumb-item"><a href="{% url 'shop' %}">Shop</a></li>
+              <li class="breadcrumb-item">
+                <a href="{% url 'client_account' %}">Account</a>
+              </li>
               <li class="breadcrumb-item active" aria-current="page">
-                My Account
+                My Profile
               </li>
             </ol>
           </div>
@@ -77,13 +82,14 @@
                             <div class="card-body">
                               <h3 class="card-title">Shipping Address</h3>
                               <!-- End .card-title -->
-                              {% if not user.client_profile.shipping_address %}
+                              {% if not user.client_profile.shipping_location %}
                               <p>
                                 You have not set up this type of address yet.<br />
                               </p>
                               {% else %}
                               <p>
-                                Address: {{user.client_profile.shipping_address}}<br />
+                                Address: {{user.client_profile.shipping_location}}<br />
+                                Street: {{user.client_profile.shipping_street}}<br />
                               </p>
                               {% endif %}
                               <a class="icon-edit"  data-toggle="modal" data-target="#update_shipping_address" href="#">Update</a>
@@ -299,13 +305,24 @@
                     <form action="" method="POST">
                       {% csrf_token %}
                       <div class="form-group">
-                        <label for="shipping_address">Shipping address</label>
+                        <label for="shipping_location">Shipping location</label>
                         <input
                           type="text"
                           class="form-control"
-                          id="shipping_address"
-                          name="shipping_address"
-                          value="{{user.client_profile.shipping_address}}"
+                          id="shipping_location"
+                          name="shipping_location"
+                          value="{{user.client_profile.shipping_location}}"
+                          required
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="shipping_street">Shipping street</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="shipping_street"
+                          name="shipping_street"
+                          value="{{user.client_profile.shipping_street}}"
                           required
                         />
                       </div>

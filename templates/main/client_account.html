@@ -21,7 +21,9 @@
           "
         >
           <div class="container">
-            <h1 class="page-title">My Account<span>Shop</span></h1>
+            <h1 class="page-title">
+              {{user.first_name}} {{user.last_name}}<span>My Account</span>
+            </h1>
             <p class="text-muted lead">
               If you have any questions, please feel free to
               <a href="{% url 'contact' %}">contact us</a>, our customer service

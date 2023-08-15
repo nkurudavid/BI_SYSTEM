@@ -1,3 +1,4 @@
+import random
 from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.core.mail import EmailMessage
@@ -261,50 +262,75 @@ def removeFromCart(request, product_id):
 
 
 
+
+@login_required(login_url='shop')
 def shop_checkout(request):
-    if 'search' in request.POST:
-        search_data = request.POST.get("search_data")
-
-        if search_data:
-            # Call the search_result function and pass the data
-            return search_result(request, search_data)
+    if request.user.is_authenticated and request.user.is_client==True:
+        if 'search' in request.POST:
+            search_data = request.POST.get("search_data")
+            if search_data:
+                # Call the search_result function and pass the data
+                return search_result(request, search_data)
+            else:
+                return redirect(shop)
         else:
-            return redirect(shop)
+            return render(request, 'main/checkout.html')
     else:
-        return render(request, 'main/checkout.html')
+        messages.warning(request, ('You have to login to view the page!'))
+        return redirect(shop)
 
 
 
+@login_required(login_url='shop')
 def order_confirmation(request):
-    if 'search' in request.POST:
-        search_data = request.POST.get("search_data")
+    if request.user.is_authenticated and request.user.is_client==True:
+        if 'place_order' in request.POST:
+            shipping_location = request.POST.get("shipping_location")
+            shipping_street = request.POST.get("shipping_street")
+            pay_method = request.POST.get("pay_method")
+            payment_id = request.POST.get("payment_id")
 
-        if search_data:
-            # Call the search_result function and pass the data
-            return search_result(request, search_data)
+            # Generate a random number for order number
+            order_no = random.randint(1, 1000000)
+
+            # get data from cart to get total_amount
+            cart = request.session.get('cart', {})
+            total_price = 0
+            for product_id, item in cart.items():
+                p_data = ProductDetail.objects.get(id=int(product_id))
+                total_price += p_data.product.price * item['quantity']
+
+            # add new order
+            client_order = Order(
+                client = get_user_model().objects.get(email=request.user.email),
+                order_number =order_no,
+                status = 'Pending',
+                shipping_address = shipping_location+"/ "+shipping_street,
+                total_amount = total_price,
+                payment_method = pay_method,
+                payment_id = payment_id,
+            )
+            client_order.save()
+            if client_order:
+                for product_id, item in cart.items():
+                    details = OrderDetail(
+                        order = client_order,
+                        product_detail = ProductDetail.objects.get(id=int(product_id)),
+                        quantity = item['quantity'],
+                    )
+                    details.save()
+
+            # Clear the cart after order submission
+            request.session['cart'] = {}
+            messages.success(request, ('Your order is on waiting list!'))
+            return redirect(client_order_list)
         else:
-            return redirect(shop)
+            messages.success(request, ('Oops! something is off.'))
+            return redirect(shop_checkout)
     else:
-        cart = request.session.get('cart', {})
-        # Implement order submission logic here
-        # Clear the cart after order submission
-        request.session['cart'] = {}
-        messages.success(request, ('Order submitted successfully!'))
-        return render(request, 'main/confirmation.html')
+        messages.warning(request, ('You have to login to view the page!'))
+        return redirect(shop_checkout)
 
-
-
-def order_tracking(request):
-    if 'search' in request.POST:
-        search_data = request.POST.get("search_data")
-
-        if search_data:
-            # Call the search_result function and pass the data
-            return search_result(request, search_data)
-        else:
-            return redirect(shop)
-    else:
-        return render(request, 'main/tracking.html')
 
 
 
@@ -489,14 +515,16 @@ def client_profile(request):
                 return redirect(client_profile)
 
         elif 'update_shipping_address' in request.POST:
-            shipping_address = request.POST.get('shipping_address')
+            shipping_location = request.POST.get('shipping_location')
+            shipping_street = request.POST.get('shipping_street')
 
-            if shipping_address:
+            if shipping_location and shipping_street:
                 # get client profile
                 c_profile, created = ClientProfile.objects.get_or_create(client=get_user_model().objects.get(email=request.user.email))
 
                 # update client shipping address and save
-                c_profile.shipping_address=shipping_address
+                c_profile.shipping_location=shipping_location
+                c_profile.shipping_street=shipping_street
                 c_profile.save()
 
                 messages.success(request, ('Shipping address updated successfully'))

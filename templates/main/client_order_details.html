@@ -21,7 +21,9 @@
           "
         >
           <div class="container">
-            <h1 class="page-title">My Account<span>Shop</span></h1>
+            <h1 class="page-title">
+              {{user.first_name}} {{user.last_name}}<span>My Account</span>
+            </h1>
             <p class="text-muted lead">
               If you have any questions, please feel free to
               <a href="{% url 'contact' %}">contact us</a>, our customer service
@@ -44,7 +46,7 @@
                 <a href="{% url 'client_account' %}">Account</a>
               </li>
               <li class="breadcrumb-item">
-                <a href="{% url 'client_account' %}#tab-orders">MyOrder</a>
+                <a href="{% url 'client_order_list' %}">MyOrder</a>
               </li>
               <li class="breadcrumb-item active" aria-current="page">
                 Order Details
