@@ -325,7 +325,7 @@ def order_confirmation(request):
             messages.success(request, ('Your order is on waiting list!'))
             return redirect(client_order_list)
         else:
-            messages.success(request, ('Oops! something is off.'))
+            messages.success(request, ('Oops! error in placing order.'))
             return redirect(shop_checkout)
     else:
         messages.warning(request, ('You have to login to view the page!'))
@@ -423,7 +423,7 @@ def client_dashboard(request):
     if request.user.is_authenticated and request.user.is_client==True:
         # client orders
         orders = Order.objects.filter(client=request.user)
-        new_orders = Order.objects.filter(client=request.user, status='PENDING').count()
+        new_orders = Order.objects.filter(client=request.user).exclude(status='Success').count()
         context = {
             'title': 'Client Account',
             'orders': orders,
@@ -441,8 +441,8 @@ def client_dashboard(request):
 def client_order_list(request):
     if request.user.is_authenticated and request.user.is_client==True:
         # client orders
-        orders = Order.objects.filter(client=request.user)
-        new_orders = Order.objects.filter(client=request.user, status='PENDING').count()
+        orders = Order.objects.filter(client=request.user).order_by('-created_date','status')
+        new_orders = Order.objects.filter(client=request.user).exclude(status='Success').count()
         context = {
             'title': 'Client Account',
             'orders': orders,
@@ -464,7 +464,7 @@ def client_order_details(request, pk):
         if Order.objects.filter(client=request.user, pk=order_id).exists():
             # client orders
             order = Order.objects.get(client=request.user, pk=order_id)
-            new_orders = Order.objects.filter(client=request.user, status='PENDING').count()
+            new_orders = Order.objects.filter(client=request.user).exclude(status='Success').count()
             context = {
                 'title': 'Client Account',
                 'order': order,
@@ -561,7 +561,7 @@ def client_profile(request):
                 messages.error(request, "Error , All fields are required !")
                 return redirect(client_profile)
         else:
-            new_orders = Order.objects.filter(client=request.user, status='PENDING').count()
+            new_orders = Order.objects.filter(client=request.user).exclude(status='Success').count()
             context = {
                 'title': 'Client Profile',
                 'new_orders': new_orders,

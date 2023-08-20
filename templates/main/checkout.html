@@ -45,6 +45,10 @@
                 <div class="row">
                   <div class="col-lg-6">
                     <h2 class="checkout-title">Shipping address</h2>
+                    <p class="mb-5">
+                      To proceed with the payment, Fill out the form if not, the
+                      Shipping address is required.
+                    </p>
                     <!-- End .checkout-title -->
                     <label>Location address *</label>
                     <input
@@ -118,11 +122,11 @@
                       </table>
                       <!-- End .table table-summary -->
 
-                      <hr />
                       <div
                         class="accordion-summary py-5"
                         id="accordion-payment"
                       >
+                        <hr />
                         <h6 class="">Shipping address</h6>
                         <div class="card">
                           <div class="card-header" id="heading-1">
@@ -246,21 +250,6 @@
 
     {% include 'main/includes/paypay.html' %}
     <!-- End -->
-
-    <script>
-      var orderConfirmationURL = "{% url 'order_confirmation' %}";
-      var pay_on_delivery_btn = document.getElementById("pay_on_delivery");
-      pay_on_delivery_btn.addEventListener("click", function () {
-        var shipping_location = $("#location").val();
-        var shipping_street = $("#street").val();
-
-        if (shipping_location !== null && shipping_street !== null) {
-          pass;
-        } else {
-          alert("Shipping address is required. Fill out the form correctly.");
-        }
-      });
-    </script>
 
     {% endblock %}
   </body>

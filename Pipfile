@@ -9,6 +9,9 @@ django-phonenumber-field = {extras = ["phonenumbers"], version = "*"}
 pillow = "*"
 mysqlclient = "*"
 django-currentuser = "*"
+django-cors-headers = "*"
+django-paypal = "*"
+babel = "*"
 
 [dev-packages]
 

@@ -154,11 +154,25 @@
                     </table>
                     <!-- End .table table-summary -->
 
+                    {% if user.is_authenticated %}
                     <a
                       href="{% url 'shop_checkout' %}"
                       class="btn btn-outline-primary-2 btn-order btn-block"
-                      >PROCEED TO CHECKOUT</a
                     >
+                      PROCEED TO CHECKOUT
+                    </a>
+                    {% else %}
+                    <a
+                      tabindex="0"
+                      class="btn btn-outline-primary-2 btn-order btn-block"
+                      role="button" data-toggle="popover"
+                      data-trigger="focus"
+                      title="PROCEED TO CHECKOUT"
+                      data-content="You have to sign in to client account to proceed to checkout page"
+                    >
+                      PROCEED TO CHECKOUT
+                    </a>
+                    {% endif %}
                   </div>
                   <!-- End .summary -->
 

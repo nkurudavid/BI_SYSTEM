@@ -41,7 +41,7 @@ class ProductCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('product_name','category','description','price','all_details',)
+    list_display = ('product_name','category','formatted_price','all_details',)
     list_filter = ('category',)
     fieldsets = (
         ('Product Info', {'fields': ('category','product_name','description','price',)}),
@@ -58,6 +58,9 @@ class ProductAdmin(admin.ModelAdmin):
     def all_details(self, obj):
         return obj.details.count()
 
+    @admin.display(description='Price')
+    def formatted_price(self, obj):
+        return 'Frw {:,.1f}'.format(obj.price)
 
 
 @admin.register(ProductDetail)
@@ -70,7 +73,7 @@ class ProductDetailAdmin(admin.ModelAdmin):
     add_fieldsets = (
         ('Register New Product', {'fields': ('product', 'color', 'quantity', 'picture',)}),
     )
-    search_fields = ('product',)
+    search_fields = ('color',)
     ordering = ('product',)
     list_per_page = 20
 
@@ -78,7 +81,7 @@ class ProductDetailAdmin(admin.ModelAdmin):
 
 @admin.register(StockMovement)
 class StockMovementAdmin(admin.ModelAdmin):
-    list_display = ('product_detail','movement_type','quantity','total_price','processed_by','date_time',)
+    list_display = ('product_detail','movement_type','quantity','formatted_price','processed_by','date_time',)
     list_filter = ('movement_type',)
     fieldsets = (
         ('Stock Movement Info', {'fields': ('product_detail','movement_type','quantity','total_price','processed_by','date_time',)}),
@@ -86,9 +89,13 @@ class StockMovementAdmin(admin.ModelAdmin):
     add_fieldsets = (
         ('New Stock Movement', {'fields': ('product_detail','movement_type','quantity','total_price','processed_by','date_time',)}),
     )
-    search_fields = ('product_detail','date_time',)
+    search_fields = ('date_time',)
     ordering = ('date_time',)
     list_per_page = 20
+
+    @admin.display(description='Total price')
+    def formatted_price(self, obj):
+        return 'Frw {:,.1f}'.format(obj.total_price)
 
     def get_readonly_fields(self, request, obj=None):
         # make 'status' field read-only
@@ -96,31 +103,46 @@ class StockMovementAdmin(admin.ModelAdmin):
             return ['date_time',]
         return []
 
+    def get_fieldsets(self, request, obj=None):
+        if request.user.is_superuser or request.user.has_perm('account.can_see_hidden_field'):
+            fieldsets = super().get_fieldsets(request, obj)
+        else:
+            fieldsets = (
+                (None, {'fields': ('product_detail','movement_type','quantity','total_price','date_time',)}),
+            ) 
+        return fieldsets
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('order_number','client','status','total_amount','payment_method','created_date',)
+    list_display = ('order_number','client','formatted_amount','payment_method','status','created_date',)
     list_filter = ('status','created_date',)
     fieldsets = (
-        ('Client Order', {'fields': ('order_number','client','status','total_amount','payment_method','created_date',)}),
+        ('Client Order', {'fields': ('order_number','client','status','total_amount','payment_method','payment_id','created_date',)}),
     )
     add_fieldsets = (
-        ('New Client Order', {'fields': ('order_number','client','status','total_amount','payment_method','created_date',)}),
+        ('New Client Order', {'fields': ('order_number','client','status','total_amount','payment_method','payment_id','created_date',)}),
     )
-    search_fields = ('client','order_number','created_date',)
-    ordering = ('created_date',)
+    search_fields = ('order_number','payment_id','created_date',)
+    ordering = ('status','-created_date',)
     list_per_page = 20
     inlines = [
         OrderDetailInline,
     ]
 
+    @admin.display(description='Total amount')
+    def formatted_amount(self, obj):
+        return 'Frw {:,.1f}'.format(obj.total_amount)
+
     def get_readonly_fields(self, request, obj=None):
+        readonly_fields = super().get_readonly_fields(request, obj)
         # make 'status' field read-only
-        if request.user.is_superuser == True:
-            return ['created_date',]
-        elif not request.user.is_superuser == True:
-            return ['order_number','client','total_amount','payment_method','created_date',]
-        return []
+        if obj and obj.status == Order.OrderStatus.SUCCESS and not request.user.is_superuser:
+            readonly_fields += ('created_date','order_number','client','total_amount','payment_method','payment_id','created_date','status',)  # Add 'status' field to readonly_fields
+        elif obj and request.user.is_superuser:
+            readonly_fields += ('created_date',)
+        elif obj and not request.user.is_superuser:
+            readonly_fields += ('created_date','order_number','client','total_amount','payment_method','payment_id','created_date',)
+        return readonly_fields
 
 
 @admin.register(OrderDetail)
@@ -133,7 +155,7 @@ class OrderDetailAdmin(admin.ModelAdmin):
     add_fieldsets = (
         ('New Order Details', {'fields': ('order','product_detail','quantity',)}),
     )
-    search_fields = ('order',)
+    search_fields = ('product_detail',)
     ordering = ('order',)
     list_per_page = 20
 

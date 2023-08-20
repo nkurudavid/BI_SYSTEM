@@ -33,7 +33,10 @@
         <!-- End .product-cart-details -->
 
         <figure class="product-image-container">
-          <a href="product.html" class="product-image">
+          <a
+            href="{% url 'product_details' item.p_data.id %}"
+            class="product-image"
+          >
             {% if item.p_data.picture %}
             <img src="{{item.p_data.picture.url}}" alt="product" />
             {% else %}
@@ -63,9 +66,11 @@
 
     <div class="dropdown-cart-action">
       <a href="{% url 'shop_cart' %}" class="btn btn-primary">View Cart</a>
+      {% if user.is_authenticated %}
       <a href="{% url 'shop_checkout' %}" class="btn btn-outline-primary-2">
         <span>Checkout</span> <i class="icon-long-arrow-right"></i>
       </a>
+      {% endif %}
     </div>
     <!-- End .dropdown-cart-total -->
     {% else %}

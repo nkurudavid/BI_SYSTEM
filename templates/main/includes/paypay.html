@@ -11,6 +11,21 @@
 <script src="https://js.braintreegateway.com/web/3.39.0/js/paypal-checkout.min.js"></script>
 
 <script>
+  const location_input = document.getElementById("location");
+  const street_input = document.getElementById("street");
+  const paymentDiv = document.getElementById("accordion-payment");
+
+  location_input.addEventListener("input", validateInputs);
+  street_input.addEventListener("input", validateInputs);
+
+  function validateInputs() {
+    if (location_input.value.trim() !== "" && street_input.value.trim() !== "") {
+      paymentDiv.style.display = "block";
+    } else {
+      paymentDiv.style.display = "none";
+    }
+  }
+
   // Function to convert RWF to USD
   function convertRwfToUsd(amountInRwf) {
     // Fixed conversion rate: 1 RWF = 0.00086 USD
@@ -59,7 +74,7 @@
       // Create a PayPal app: https://developer.paypal.com/developer/applications/create
 
       client: {
-        sandbox: 'AczEmNY0R9FWYY_ecAy5LXpapedNCGBYlJGftbBmi7BRCFTmcwkCmik6SZNOtnO-IOrFrf0gfHTU3ga6',
+        sandbox: 'AavW2aI_AmWyMbAcHIusR7s_daPGye5qtduCZed7kjkeUdVjXCnAFBylweCLWK6F-AlY2NtmZnFaztdJ',
         production: ''
       },
 
@@ -94,22 +109,22 @@
             var shipping_street = $('#street').val();
             var pay_method = "PayPal";
             var dataForm = {
-                'shipping_location': shipping_location,
-                'shipping_street': shipping_street,
-                'pay_method': pay_method,
-                'payment_id': data.paymentID,
-                'place_order': true,
+              'shipping_location': shipping_location,
+              'shipping_street': shipping_street,
+              'pay_method': pay_method,
+              'payment_id': data.paymentID,
+              'place_order': true,
+              'csrfmiddlewaretoken': '{{ csrf_token }}',
             };
             $.ajax({
-                method: "POST",
-                url: "{% url 'order_confirmation' %}",
-                data: dataForm,
-                dataType: "json",
+              method: "POST",
+              url: "{% url 'order_confirmation' %}",
+              data: dataForm,
+              dataType: "json",
             });
             alert('Payment Completed successfully');
-            alert("Order placed successfully.");
             // Or go to another URL
-            window.location.href = "{% url 'client_order_list' %}"";
+            window.location.href = "{% url 'client_order_list' %}";
         });
       },
 

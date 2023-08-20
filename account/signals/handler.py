@@ -8,4 +8,4 @@ from django.dispatch import receiver
 def create_client_profile(sender, instance, created, **kwargs):
     # If the instance is newly created and is_client is True
     if created and instance.is_client:
-        ClientProfile.objects.create(client=instance, phone_number="", location="",)
+        ClientProfile.objects.create(client=instance, phone_number="", location="", shipping_location="", shipping_street="",)
