@@ -1,5 +1,6 @@
 from django.contrib import admin
 from main.models import *
+from .pdf_generator import generate_pdf_report
 
 # Register your models here.
 
@@ -81,7 +82,7 @@ class ProductDetailAdmin(admin.ModelAdmin):
 
 @admin.register(StockMovement)
 class StockMovementAdmin(admin.ModelAdmin):
-    list_display = ('product_detail','movement_type','quantity','formatted_price','processed_by','date_time',)
+    list_display = ('product_detail','movement_type','quantity','formatted_price','formatted_date_time',)
     list_filter = ('movement_type',)
     fieldsets = (
         ('Stock Movement Info', {'fields': ('product_detail','movement_type','quantity','total_price','processed_by','date_time',)}),
@@ -92,6 +93,17 @@ class StockMovementAdmin(admin.ModelAdmin):
     search_fields = ('date_time',)
     ordering = ('date_time',)
     list_per_page = 20
+    actions = ['generate_pdf']
+
+    def generate_pdf(self, request, queryset):
+        response = generate_pdf_report(queryset)
+        return response
+
+    generate_pdf.short_description = "Generate PDF Report for Selected Stock Movements"
+
+    def formatted_date_time(self, obj):
+        return obj.date_time.strftime('%Y-%m-%d %H:%M:%S')  # Customize the date and time format as needed
+    formatted_date_time.short_description = 'Date & Time'
 
     @admin.display(description='Total price')
     def formatted_price(self, obj):

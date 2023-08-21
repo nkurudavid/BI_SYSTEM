@@ -12,6 +12,8 @@ django-currentuser = "*"
 django-cors-headers = "*"
 django-paypal = "*"
 babel = "*"
+reportlab = "*"
+django-admin-interface = "*"
 
 [dev-packages]
 
